@@ -3,6 +3,7 @@
 #include <string.h>
 #include <stdlib.h>
 
+#include "helpers.h"
 #include "lexer.h"
 #include "main.h"
 #include "token.h"
@@ -31,14 +32,14 @@ int main(int argc, char **argv)
 	}
 
 
-	push_token(&head, NULL, 0, TOK_START);
+	token_push(&head, NULL, 0, TOK_START);
 	buf_size = load_file(src_file, &file_buffer);
 
 	lex_begin(file_buffer, buf_size, &head);
 
 
 	free(file_buffer);
-	free_tokens(head);
+	token_free(head);
 
 	return 0;
 }

@@ -10,7 +10,7 @@
  * @line_num: the line number the token is coming from
  * @type: the type of token; useful for the parser in later stages
  */
-void push_token(Token **head, char *value, size_t line_num, TokenType type)
+void token_push(Token **head, char *value, size_t line_num, TokenType type)
 {
 	Token *new = NULL;
 	if (!head)
@@ -35,27 +35,69 @@ void push_token(Token **head, char *value, size_t line_num, TokenType type)
 		*head = new;
 	else
 	{
-		/* set prev of new to the last node and update
-		 * last to the new node
+		/* set last as new node's prev and set
+		 * last node's next as new node
 		 */
 		new->prev = (*head)->last;
+		(*head)->last->next = new;
 	}
 
+	/* update the last node to the new node */
 	(*head)->last = new;
 }
 
-void free_tokens(Token *head)
+void token_print(Token *head)
+{
+}
+
+void token_free(Token *head)
 {
 	Token *cur = NULL;
 
-	if (head)
+	while (head)
 	{
-		while (head)
-		{
-			cur = head;
-			head = cur->next;
-			free(cur);
-		}
-		free(head);
+		cur = head;
+		if (cur->value)
+			free(cur->value);
+		head = cur->next;
+		free(cur);
 	}
+}
+
+/**
+ * token_str - gets the string format of the enum
+ * @tok: the token type
+ * Return: returns the string format
+ */
+char *token_str(TokenType tok)
+{
+	switch(tok)
+	{
+		case TOK_NUMBER:
+			return "[number]";
+			break;
+		case TOK_NEWLINE:
+			return "[newline]";
+			break;
+		case TOK_START:
+			return "[start]";
+			break;
+		case TOK_END:
+			return "[end]";
+			break;
+		case TOK_STRING:
+			return "[string]";
+			break;
+		case TOK_REGISTER:
+			return "[register]";
+			break;
+		case TOK_OPCODE:
+			return "[opcode]";
+			break;
+		case TOK_UNKNOWN:
+			return "[unknown]";
+			break;
+	}
+
+	return NULL;
 }

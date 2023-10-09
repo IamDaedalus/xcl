@@ -6,10 +6,13 @@
 typedef enum TokenType
 {
 	TOK_START,
+	TOK_NEWLINE,
 	TOK_REGISTER,
+	TOK_OPCODE,
 	TOK_STRING,
 	TOK_NUMBER,
 	TOK_END,
+	TOK_UNKNOWN,
 } TokenType;
 
 typedef struct Token
@@ -22,7 +25,9 @@ typedef struct Token
 	struct Token *prev;
 } Token;
 
-void push_token(Token **head, char *value, size_t line_num, TokenType type);
-void free_tokens(Token *head);
+void token_push(Token **head, char *value, size_t line_num, TokenType type);
+void token_free(Token *head);
+void token_print(Token *head);
+char *token_str(TokenType tok);
 
 #endif /* TOKEN_H */
