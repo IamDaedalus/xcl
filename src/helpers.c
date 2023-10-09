@@ -6,3 +6,8 @@ char is_alpha(char c)
 		return c;
 	else return 0;
 }
+
+int is_digit(char c)
+{
+	return c >= 48 && c <= 57;
+}

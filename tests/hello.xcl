@@ -1,2 +1,3 @@
 # print hello world
 mov "hello world" stdo
+mov 3243 stdo

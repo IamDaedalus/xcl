@@ -1,4 +1,5 @@
 #include "lexer.h"
+#include "err.h"
 #include "helpers.h"
 #include "token.h"
 #include <stdio.h>
@@ -6,12 +7,10 @@
 #include <stddef.h>
 #include <string.h>
 
-void lex_begin(char *file_buf, size_t size, Token **head)
+void lex_begin(char *file_buf, size_t size, Token **tokens, Error **err)
 {
 	size_t line = 1;
 	size_t i = 0;
-
-	(void)head;
 
 	while (i < size)
 	{
@@ -19,7 +18,7 @@ void lex_begin(char *file_buf, size_t size, Token **head)
 
 		if (c == '\n')
 		{
-			token_push(head, NULL, line, TOK_NEWLINE);
+			token_push(tokens, NULL, line, TOK_NEWLINE);
 			line++;
 		}
 		else if (c == '#')
@@ -31,8 +30,8 @@ void lex_begin(char *file_buf, size_t size, Token **head)
 		{
 			int start = i;
 
-			/* extract substr of the keyword */
-			while ((is_alpha(file_buf[i]) != 0))
+			/* extract substr of the keyword while checking for overflow*/
+			while ((is_alpha(file_buf[i]) != 0) && i < size)
 				i++;
 
 			int kw_len = i - start;
@@ -46,10 +45,74 @@ void lex_begin(char *file_buf, size_t size, Token **head)
 			strncpy(kw, &file_buf[start], kw_len);
 			kw[kw_len] = '\0';
 
-			token_push(head, kw, line, check_identifier(kw));
+			token_push(tokens, kw, line, check_identifier(kw));
 
 			free(kw);
 			i--;
+		}
+		else if (c == '"')
+		{
+			i++;
+			/* necessary for checking the ending quote */
+			int start = i;
+
+			/* TODO: escape values such as \" \' */
+			while (!(strchr("\t\n\"", file_buf[i])) && i < size)
+				i++;
+
+			if (file_buf[i] != '"')
+			{
+				err_push(err, "string unterminated at %lu", line);
+				return;
+			}
+
+			int str_len = i - start;
+			char *str = malloc(sizeof(char) * str_len + 1);
+			if (!str)
+			{
+				fprintf(stderr, "malloc failed at lex_begin\n");
+				exit(EXIT_FAILURE);
+			}
+
+			strncpy(str, &file_buf[start], str_len);
+			str[str_len] = '\0';
+
+			token_push(tokens, str, line, TOK_STRING);
+
+			free(str);
+			i++;
+		}
+		else if (is_digit(c))
+		{
+			int start = i;
+
+			while (is_digit(file_buf[i]))
+			{
+				i++;
+			}
+			/* check if the last character after the last digit is a space
+			 * so that we can get a valid number
+			 */
+			if (file_buf[i] != ' ')
+			{
+				err_push(err, "invalid number detected at %lu\n", line);
+				return;
+			}
+
+			int num_len = i - start;
+			char *val = malloc(sizeof(char) * num_len + 1);
+			if (!val)
+			{
+				fprintf(stderr, "malloc failed in lex_begin\n");
+				exit(EXIT_FAILURE);
+			}
+
+			strncpy(val, &file_buf[start], num_len);
+			val[num_len] = '\0';
+
+			token_push(tokens, val, line, TOK_NUMBER);
+
+			free(val);
 		}
 		i++;
 	}

@@ -3,6 +3,7 @@
 #include <string.h>
 #include <stdlib.h>
 
+#include "err.h"
 #include "helpers.h"
 #include "lexer.h"
 #include "main.h"
@@ -13,7 +14,8 @@ int main(int argc, char **argv)
 	FILE *src_file;
 	size_t buf_size = 0;
 	char *file_buffer = NULL;
-	Token *head = NULL;
+	Token *toks = NULL;
+	Error *errs = NULL;
 
 	if (argc != 2)
 	{
@@ -32,16 +34,17 @@ int main(int argc, char **argv)
 	}
 
 
-	token_push(&head, NULL, 0, TOK_START);
+	token_push(&toks, NULL, 0, TOK_START);
 	buf_size = load_file(src_file, &file_buffer);
 
-	lex_begin(file_buffer, buf_size, &head);
+	lex_begin(file_buffer, buf_size, &toks, &errs);
 
-	token_print(head);
+	token_print(toks);
 
 
+	err_free(errs);
 	free(file_buffer);
-	token_free(head);
+	token_free(toks);
 
 	return 0;
 }
