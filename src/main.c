@@ -37,6 +37,8 @@ int main(int argc, char **argv)
 
 	lex_begin(file_buffer, buf_size, &head);
 
+	token_print(head);
+
 
 	free(file_buffer);
 	token_free(head);

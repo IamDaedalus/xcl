@@ -48,6 +48,14 @@ void token_push(Token **head, char *value, size_t line_num, TokenType type)
 
 void token_print(Token *head)
 {
+	Token *cur = NULL;
+
+	while (head)
+	{
+		cur = head;
+		printf("%s", token_str(cur->token_type));
+		head = cur->next;
+	}
 }
 
 void token_free(Token *head)
@@ -74,28 +82,28 @@ char *token_str(TokenType tok)
 	switch(tok)
 	{
 		case TOK_NUMBER:
-			return "[number]";
+			return "[number] ";
 			break;
 		case TOK_NEWLINE:
-			return "[newline]";
+			return "\n";
 			break;
 		case TOK_START:
-			return "[start]";
+			return "[start]\n";
 			break;
 		case TOK_END:
-			return "[end]";
+			return "[end]\n";
 			break;
 		case TOK_STRING:
-			return "[string]";
+			return "[string] ";
 			break;
 		case TOK_REGISTER:
-			return "[register]";
+			return "[register] ";
 			break;
 		case TOK_OPCODE:
-			return "[opcode]";
+			return "[opcode] ";
 			break;
 		case TOK_UNKNOWN:
-			return "[unknown]";
+			return "[unknown] ";
 			break;
 	}
 

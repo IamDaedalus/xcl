@@ -66,7 +66,8 @@ TokenType check_identifier(char *identifier)
 	};
 
 	char *registers[] = {
-		"cx", "reg1", "reg2", "reg3", "reg0",
+		"cx", "reg1", "reg2", "reg3", "reg0", "stdi",
+		"stdo",
 	};
 
 	codes_len = sizeof(opcodes) / sizeof(opcodes[0]);
@@ -75,7 +76,7 @@ TokenType check_identifier(char *identifier)
 	/* check the identifier against known opcodes */
 	while (i < codes_len)
 	{
-		if (strncmp(opcodes[0], identifier, strlen(identifier)) == 0)
+		if (strncmp(opcodes[i], identifier, strlen(identifier)) == 0)
 			return TOK_OPCODE;
 
 		i++;
@@ -85,7 +86,7 @@ TokenType check_identifier(char *identifier)
 	/* check the identifier against known registers */
 	while (i < reg_len)
 	{
-		if (strncmp(registers[0], identifier, strlen(identifier)) == 0)
+		if (strncmp(registers[i], identifier, strlen(identifier)) == 0)
 			return TOK_REGISTER;
 
 		i++;
