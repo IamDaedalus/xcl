@@ -1,3 +1,44 @@
 # print hello world
+# ooooooooooo
 mov "hello world" stdo
-mov 3243 stdo
+name: "Hello"
+print "$name"
+name: 78
+
+greet is "hello"
+print "$greet I'm Manny"
+
+daniel_age is 10
+daniel_and_ten is daniel_age and 10
+
+fun add_ten num is num and 10
+daniel_age is add_ten 10
+
+(5 * (4 + (3 - (2 / 1))))
+5 by 4 and 3 from 2 div 1
+5 by (4 and (3 from (2 div 1)))
+
+fun initial str is
+	str::0
+
+my_list is [23; 45; 90; 23; 12; 10]
+
+print "$(my_list::3)"
+
+fun print_var var is print "$var"
+
+fun sum_to n is
+	if n less 0 then 0
+	else n and sum_to 1 from n
+;
+
+fun add_to n is
+	if n is 0 then 1
+	else n and add_to n from 1
+
+fun fact n is
+	if n is less equal 0 then 1
+	else n and fact n from 1
+
+fun add_ten num is
+	num and 10

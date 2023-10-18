@@ -1,0 +1,11 @@
+# this is a hypothetical script
+
+# create variables
+hello : "hello"
+age : 78
+st_num : 1029
+name : "nora"
+
+# basic arithmetic
+sub : age from st_num # st_num - age
+

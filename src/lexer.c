@@ -120,7 +120,8 @@ char *lextract_num(char *file_buf, size_t *index, size_t size, size_t line)
 	 */
 	if (file_buf[*index] != ' ')
 	{
-		fprintf(stderr, "invalid number at %lu\n", line);
+		fprintf(stderr, "invalid number at line %lu\n", line);
+		printf("%s\n", file_buf);
 		exit(EXIT_FAILURE);
 	}
 
