@@ -4,7 +4,8 @@ xcl came about as a way for me to practice myself into learning about lexical an
 and common data structures like Linked Lists, Queues and Stacks in order to get better at using them.  
 
 I work on xcl during my free time as I am still in school and usually put whatever I learned into  
-practice through xcl.  
+practice through xcl. This project is likely to change based on some design decisions because again this  
+a learning avenue for me.
   
 
 At the moment it is not complete so there are no documentation available publicly on how to use xcl.
