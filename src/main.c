@@ -34,7 +34,13 @@ int main(int argc, char **argv)
 	}
 
 
+	/* initialise the tokens with a TOK_START that the parser will
+	 * check later on
+	 */
 	token_push(&toks, NULL, 0, TOK_START);
+	/* load the file into memory
+	 * might not be the best for huge files
+	 */
 	buf_size = load_file(src_file, &file_buffer);
 
 	lex_begin(file_buffer, buf_size, &toks, &errs);
@@ -42,6 +48,7 @@ int main(int argc, char **argv)
 	token_print(toks);
 
 
+	/* clean up and resource deallocation */
 	err_free(errs);
 	free(file_buffer);
 	token_free(toks);

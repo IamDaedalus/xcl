@@ -6,13 +6,25 @@
 #include <stdlib.h>
 #include <stddef.h>
 #include <string.h>
+#include <strings.h>
 
+/**
+ * lex_begin - this the lexer's in function. scans the source file byte
+ * by byte while looking out for specific tokens such as quotes, numbers
+ * and letters
+ * @file_buf: the file buffer that we loaded into memory
+ * @size: the size of the source file in memory. this is needed to make
+ * sure the lexer doesn't read beyond the source file's memory space
+ * @tokens: the doubly linked list that stores each token extracted
+ * @err: linked list to hold every error we encounter. currently not used
+ */
 void lex_begin(char *file_buf, size_t size, Token **tokens, Error **err)
 {
 	(void)err;
 	size_t line = 1;
 	size_t index = 0;
 
+	/* make sure the index never reads beyond the file's size */
 	while (index < size)
 	{
 		char c = file_buf[index];
@@ -37,6 +49,9 @@ void lex_begin(char *file_buf, size_t size, Token **tokens, Error **err)
 		}
 		else if (c == '"')
 		{
+			/* string extraction
+			 * TODO; handle non-terminated string
+			 */
 			index++;
 			char *str = lextract_str(file_buf, &index, size, line);
 			token_push(tokens, str, line, TOK_STRING);
@@ -44,8 +59,15 @@ void lex_begin(char *file_buf, size_t size, Token **tokens, Error **err)
 			free(str);
 			index++;
 		}
+		else if (c == '-' && is_digit(file_buf[index + 1]))
+		{
+			/* negative number found */
+		}
 		else if (is_digit(c))
 		{
+			/* digit extraction.
+			 * TODO; extract negative numbers and floats
+			 */
 			char *val = lextract_num(file_buf, &index, size, line);
 			token_push(tokens, val, line, TOK_NUMBER);
 
@@ -55,6 +77,17 @@ void lex_begin(char *file_buf, size_t size, Token **tokens, Error **err)
 	}
 }
 
+/* BIG TODO; MOST OF THE LEXTRACT FUNCTIONS DO SIMILAR THINGS
+ * FIND A WAY TO MERGE THEM BY REUSING PARTS
+ */
+
+/**
+ * lextract_id - this extracts an identifier when it encounters a letter
+ * @file_buf: the buffer stored in memory
+ * @index: the current position of the scanner
+ * @size: the size of the file buffer
+ * @line: the current line; incremented whenever we hit a new line
+ */
 char *lextract_id(char *file_buf, size_t *index, size_t size, size_t line)
 {
 	(void)line;
@@ -78,6 +111,15 @@ char *lextract_id(char *file_buf, size_t *index, size_t size, size_t line)
 	return kw;
 }
 
+/**
+ * lextract_str - extracts a string from in between a pair of quotes
+ * @file_buf: the buffer stored in memory
+ * @index: the current position of the scanner
+ * @size: the size of the file buffer
+ * @line: the current line; incremented whenever we hit a new line
+ *
+ * Return: returns a string containing the string...
+ */
 char *lextract_str(char *file_buf, size_t *index, size_t size, size_t line)
 {
 	/* necessary for checking the ending quote */
@@ -107,7 +149,17 @@ char *lextract_str(char *file_buf, size_t *index, size_t size, size_t line)
 	return str;
 }
 
-char *lextract_num(char *file_buf, size_t *index, size_t size, size_t line)
+/**
+ * lextract_num - extracts integer numbers; doesn't handle
+ * negatives or floats
+ * @file_buf: the buffer stored in memory
+ * @index: the current position of the scanner
+ * @size: the size of the file buffer
+ * @line: the current line; incremented whenever we hit a new line
+ *
+ * Return: returns a string containing the number
+ */
+char *lextract_num(char *file_buf, size_t *index, size_t size, size_t line, int negative)
 {
 	int start = *index;
 
@@ -120,6 +172,7 @@ char *lextract_num(char *file_buf, size_t *index, size_t size, size_t line)
 	 */
 	if (file_buf[*index] != ' ')
 	{
+		/* insert an error into the linked list here */
 		fprintf(stderr, "invalid number at line %lu\n", line);
 		printf("%s\n", file_buf);
 		exit(EXIT_FAILURE);
@@ -139,6 +192,14 @@ char *lextract_num(char *file_buf, size_t *index, size_t size, size_t line)
 	return val;
 }
 
+/**
+ * check_identifier - this checks an extracted identifier against
+ * arrays of known identifiers. if the identifier is not found
+ * we return an unknown token
+ * @identifier: the identifier we are looking at
+ * 
+ * Return: returns the TokenType be it UNKNOWN or something else
+ */
 TokenType check_identifier(char *identifier)
 {
 	int codes_len = 0, reg_len = 0;
